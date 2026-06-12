@@ -1,0 +1,27 @@
+name: Find Bad Emails
+
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "Year of contacts to scan (createdate)"
+        default: "2026"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run scan
+        env:
+          HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
+          YEAR: ${{ inputs.year }}
+        run: node bad-email-finder.js
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bad-emails
+          path: bad-emails.csv
